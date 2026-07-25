@@ -1,0 +1,93 @@
+/* =============================================================================
+   BASE  —  element-level defaults derived from tokens.
+   Runs after Tailwind's preflight; sets the app's baseline look & a11y.
+   ========================================================================== */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    /* Smooth, but respect the reduced-motion override below. */
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    /* Subtle warm depth: a faint bronze glow bleeding from the top. */
+    background-image: radial-gradient(
+      120% 80% at 50% -10%,
+      rgba(197, 138, 88, 0.06),
+      transparent 60%
+    );
+    background-attachment: fixed;
+  }
+
+  /* Headings default to the display serif; components can override. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text);
+  }
+
+  /* Consistent, on-brand focus ring for keyboard users only. */
+  :focus-visible {
+    outline: 2px solid var(--color-bronze-hover);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Bronze text selection. */
+  ::selection {
+    background-color: var(--color-bronze-dark);
+    color: var(--color-text);
+  }
+
+  /* Themed scrollbar (webkit) — small luxury detail. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-bronze-dark);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-bronze);
+  }
+
+  /* Media defaults. */
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Accessibility: honor the OS "reduce motion" setting globally. */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

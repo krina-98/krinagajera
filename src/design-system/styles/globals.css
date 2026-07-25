@@ -1,0 +1,5 @@
+/* Single CSS entry point (imported once in app/main.jsx).
+   Order matters: tailwindcss first, then tokens, then base defaults. */
+@import "tailwindcss";
+@import "./theme.css";
+@import "./base.css";
