@@ -4,3 +4,5 @@
  */
 export { Button } from './Button'
 export { Spinner } from './Spinner'
+export { Heading, Text, Eyebrow, Code } from './typography'
+export { Container } from './layout'
