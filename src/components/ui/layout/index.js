@@ -4,3 +4,4 @@
  * (or from `@/components/ui`, which re-exports these).
  */
 export { Container } from './Container'
+export { Section } from './Section'
