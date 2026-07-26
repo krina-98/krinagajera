@@ -24,10 +24,24 @@
   --color-shadow-bronze: rgba(165, 106, 58, 0.18);
   --color-glow: rgba(197, 138, 88, 0.12);
 
+  /* Semantic / feedback colors — desaturated & earthy to sit inside the walnut
+     palette (no bright or saturated hues). Each has a readable foreground for
+     text/icons/borders and a low-alpha `-surface` tint for backgrounds.
+     Foregrounds are tuned for AA on --color-bg (danger is the tightest, ~4.6:1).
+     No component uses these yet. */
+  --color-success: #8ca382;                        /* muted sage */
+  --color-success-surface: rgba(140, 163, 130, 0.12);
+  --color-warning: #c89a54;                        /* muted ochre / honey */
+  --color-warning-surface: rgba(200, 154, 84, 0.12);
+  --color-danger: #ca7061;                         /* muted terracotta */
+  --color-danger-surface: rgba(202, 112, 97, 0.12);
+  --color-info: #879baf;                           /* muted slate blue */
+  --color-info-surface: rgba(135, 155, 175, 0.12);
+
   /* Typography — families are variables so swapping a font is a one-line edit.
      Fallbacks keep the site correct until webfonts are added in Phase 2. */
-  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo,
     Consolas, monospace;
