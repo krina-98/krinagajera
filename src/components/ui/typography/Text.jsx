@@ -15,8 +15,8 @@ const variantStyles = {
   default: 'text-text',
   secondary: 'text-text-secondary',
   muted: 'text-text-muted',
-  // bronze-hover, not bronze: the base bronze is ~4.4:1 on --color-bg (below AA).
-  accent: 'text-bronze-hover',
+  // accent-hover, not accent: the base accent is ~4.4:1 on --color-bg (below AA).
+  accent: 'text-accent-hover',
 }
 
 const weightStyles = {

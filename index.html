@@ -4,7 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3d-portfolio</title>
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0d0c0a" />
+
+    <title>Krina Gajera — Frontend Developer</title>
+    <meta
+      name="description"
+      content="Frontend developer in Surat. Real-time interfaces, state architecture, accessibility and performance across four shipped products."
+    />
+
+    <!-- The pinned hero cannot paint until its first frame exists, so start
+         that request in the document head rather than after the bundle parses.
+         Only frame one: the other 191 are fetched progressively by the app, and
+         preloading them here would compete with the CSS and the bundle. -->
+    <link rel="preload" as="image" href="/workstation/frame0001.jpg" fetchpriority="high" />
   </head>
   <body>
     <div id="root"></div>

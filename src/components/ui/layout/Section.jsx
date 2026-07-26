@@ -24,7 +24,7 @@ const spacingStyles = {
 /**
  * Backgrounds — semantic surfaces only.
  *
- * `transparent` is the default so the body's ambient bronze glow (base.css)
+ * `transparent` is the default so the body's ambient accent glow (base.css)
  * stays visible; painting `bg-bg` on every section would occlude it. Use
  * `default` deliberately when a section must occlude what sits behind it.
  */

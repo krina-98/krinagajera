@@ -6,8 +6,12 @@
 @layer base {
   :root {
     color-scheme: dark;
-    /* Smooth, but respect the reduced-motion override below. */
-    scroll-behavior: smooth;
+    /* No `scroll-behavior: smooth` — it fights ScrollTrigger's scrub, which
+       needs to read the raw scroll position rather than an animated one.
+       Nav links animate their own scroll instead, where it can be cancelled. */
+    /* Anchors land clear of the fixed bar. Applies to hash navigation and to
+       scrollIntoView, so the nav needs no per-target offset of its own. */
+    scroll-padding-top: 6rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -18,13 +22,20 @@
     height: 100%;
   }
 
+  /* The pinned hero is exactly one viewport wide; nothing may add a horizontal
+     scrollbar underneath it, which would also shift every ScrollTrigger
+     measurement. */
+  body {
+    overflow-x: clip;
+  }
+
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--leading-normal);
-    /* Subtle warm depth: a faint bronze glow bleeding from the top. */
+    /* Subtle warm depth: a faint accent glow bleeding from the top. */
     background-image: radial-gradient(
       120% 80% at 50% -10%,
       rgba(197, 138, 88, 0.06),
@@ -42,14 +53,14 @@
 
   /* Consistent, on-brand focus ring for keyboard users only. */
   :focus-visible {
-    outline: 2px solid var(--color-bronze-hover);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 2px;
     border-radius: var(--radius-xs);
   }
 
-  /* Bronze text selection. */
+  /* Accent text selection. */
   ::selection {
-    background-color: var(--color-bronze-dark);
+    background-color: var(--color-accent-dark);
     color: var(--color-text);
   }
 
@@ -62,12 +73,12 @@
     background: var(--color-surface);
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-bronze-dark);
+    background: var(--color-accent-dark);
     border-radius: var(--radius-full);
     border: 2px solid var(--color-surface);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-bronze);
+    background: var(--color-accent);
   }
 
   /* Media defaults. */
@@ -89,5 +100,55 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* =============================================================================
+   SCROLL ENTRANCE  —  the transition behind <Reveal>.
+   Kept in CSS rather than JS so the reduced-motion rule below is the single
+   authority, and so a block is never left invisible if a script fails.
+   ========================================================================== */
+
+@layer components {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(1rem);
+    transition:
+      opacity var(--duration-slower) var(--ease-out-expo),
+      transform var(--duration-slower) var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+    /* Promote only while the transition is pending, so long pages are not
+       holding dozens of composited layers after everything has revealed. */
+    will-change: opacity, transform;
+  }
+
+  [data-reveal][data-revealed] {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* No travel and no delay: the content is simply there. The global rule above
+     already collapses the duration, but the offset and stagger have to go too,
+     or a reduced-motion reader waits out a stagger they cannot see. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+      transition-delay: 0ms !important;
+    }
+  }
+}
+
+/* The scroll hint: a highlight travelling down a hairline. Declared outside a
+   layer so the utility that references it is never pruned. */
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(200%);
   }
 }

@@ -13,7 +13,7 @@ const base = cn(
   'ease-standard duration-[var(--duration-fast)]',
   // Replace the global outline with a ring that follows the border radius.
   'outline-none focus-visible:outline-none',
-  'focus-visible:ring-2 focus-visible:ring-bronze-hover focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+  'focus-visible:ring-2 focus-visible:ring-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
 )
 
 /** Press feedback: a 1px nudge, only when motion is allowed and the button is
@@ -26,8 +26,8 @@ const pressable = 'motion-safe:enabled:active:translate-y-px'
  */
 const variantStyles = {
   primary: cn(
-    'bg-bronze text-bg',
-    'enabled:hover:bg-bronze-hover enabled:hover:shadow-bronze',
+    'bg-accent text-bg',
+    'enabled:hover:bg-accent-hover enabled:hover:shadow-accent',
     pressable,
   ),
   secondary: cn(
@@ -41,10 +41,10 @@ const variantStyles = {
     pressable,
   ),
   text: cn(
-    'rounded-sm bg-transparent text-bronze-hover',
+    'rounded-sm bg-transparent text-accent-hover',
     // Underline is revealed via decoration-color, so it fades instead of jumping.
     'underline decoration-transparent decoration-1 underline-offset-4',
-    'enabled:hover:decoration-bronze-hover',
+    'enabled:hover:decoration-accent-hover',
   ),
   // Icon-only: behaves like ghost, but square (dimensions from iconSizeStyles).
   icon: cn(
@@ -94,7 +94,7 @@ const iconGlyphStyles = {
  *
  * Renders a semantic `<button>`; forwards its ref and any extra props
  * (`onClick`, `aria-*`, `form`, `name`, ...). Flat and monochrome by default;
- * only `primary` wears bronze.
+ * only `primary` wears accent.
  *
  * @param {object} props
  * @param {'primary'|'secondary'|'ghost'|'text'|'icon'} [props.variant='primary'] - Visual style. `icon` is square and icon-only.

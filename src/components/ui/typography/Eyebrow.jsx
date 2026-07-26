@@ -2,19 +2,19 @@ import { forwardRef } from 'react'
 import { cn } from '@/lib/cn'
 
 /**
- * The brand signature, expressed once: mono, uppercase, widest tracking, bronze.
+ * The brand signature, expressed once: mono, uppercase, widest tracking, accent.
  * No display/layout classes — spacing and stacking belong to the consumer.
  */
 const eyebrow = cn(
   'font-mono text-xs font-medium uppercase',
   'tracking-widest',
-  // bronze-hover, not bronze: at this size AA needs ≥4.5:1, and --color-bronze
-  // lands at ~4.4:1 on --color-bg. bronze-hover clears it at ~6.7:1.
-  'text-bronze-hover',
+  // accent-hover, not accent: at this size AA needs ≥4.5:1, and --color-accent
+  // lands at ~4.4:1 on --color-bg. accent-hover clears it at ~6.7:1.
+  'text-accent-hover',
 )
 
 /**
- * Eyebrow — the small bronze kicker above a section heading
+ * Eyebrow — the small accent kicker above a section heading
  * ("FEATURED PROJECTS", "ABOUT", "SELECTED WORK").
  *
  * Renders a `span` by default so it can sit inline or be wrapped freely; pass

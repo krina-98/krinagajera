@@ -6,16 +6,16 @@
 
 // Raw hex for Three.js / canvas (Tailwind classes aren't readable from JS).
 export const colors = {
-  bg: '#0F0B09',
-  surface: '#171210',
-  card: '#211A17',
-  cardHover: '#2A221E',
-  bronze: '#A56A3A',
-  bronzeHover: '#C58A58',
-  bronzeDark: '#7A4C27',
-  text: '#F7F4EF',
-  textSecondary: '#C8C0B8',
-  textMuted: '#9C938C',
+  bg: '#0D0C0A',
+  surface: '#171411',
+  card: '#211B16',
+  cardHover: '#2B231C',
+  accent: '#C78B4A',
+  accentHover: '#D8A95A',
+  accentDark: '#8A5F31',
+  text: '#F8F7F4',
+  textSecondary: '#CFC9C0',
+  textMuted: '#A6A19A',
 }
 
 // Motion language for Framer Motion — seconds + cubic-bezier arrays.
