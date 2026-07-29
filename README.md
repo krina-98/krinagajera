@@ -41,20 +41,94 @@ src/
 - **No magic values:** every color / size / duration comes from a token.
 - **shadcn:** accessibility primitives only — never for visual identity.
 
+## Routing
+
+Six routes, one layout. Each page is a section component that used to live on a single
+scrolling page — they were already self-contained, so becoming a route each cost them no
+changes.
+
+```
+/            Hero
+/about       About          /resume     Resume (PDF preview + download)
+/skills      Skills         /contact    Contact
+/projects    Projects       *           → redirect to /
+```
+
+- `content/navigation.js` is the single source for nav links, route order and tab titles.
+- `app/RootLayout.jsx` holds the nav, footer, scroll-progress rail and back-to-top button,
+  so they persist across navigation — that is what lets the nav indicator *slide* between
+  links instead of blinking out and back.
+- `app/Page.jsx` sets the document title and plays the entrance for every route.
+- Scroll resets to the top on navigation. A client-side router does not do this for you.
+
+> **Deploying:** this uses `BrowserRouter`, so real URLs (`/projects`, not `/#/projects`).
+> Every static host needs one rule rewriting unknown paths to `index.html`, or a hard
+> refresh on `/projects` 404s:
+>
+> - **Netlify** — add `public/_redirects` containing `/*  /index.html  200`
+> - **Vercel** — add `vercel.json` with a rewrite of `/(.*)` → `/index.html`
+> - **GitHub Pages** — cannot rewrite; either copy `dist/index.html` to `dist/404.html`
+>   after building, or switch `main.jsx` to `HashRouter`.
+
+## Motion
+
+Framer Motion, wrapped in five primitives (`components/motion`). Features compose these
+rather than importing `framer-motion` directly — reaching for the library in a feature
+means either a genuinely one-off effect (the hero's scroll parallax) or a missing
+primitive.
+
+| Primitive | Use |
+| --- | --- |
+| `Reveal` | One block entering on scroll. The default. |
+| `Stagger` / `StaggerItem` | A list arriving in sequence — one observer, not one per item. |
+| `TextReveal` | Display type rising out of a mask. Rationed: hero + section titles. |
+| `Magnetic` | Leans toward the cursor. Primary calls to action only. |
+| `ScrollProgress` | The bronze hairline tracking read position. |
+
+Variants live in `design-system/motion.js` and are built from `tokens.js`, so no duration
+or easing is ever written at a call site.
+
+**Reduced motion is handled once**, by `<MotionConfig reducedMotion="user">` in
+`AppProviders`: Framer drops transforms and layout animations, keeps opacity. Two things
+that config does *not* cover, and which therefore need handling by hand:
+
+- **Motion values bound straight to `style`** (scroll parallax) bypass it entirely — collapse
+  the travel with `useReducedMotion` yourself, as `Hero` does.
+- **State that is communicated by transform** — the nav's menu/close icon is a CSS
+  transition, not Framer, precisely because stripping its rotation would leave an open
+  menu with no visible way to close it.
+
+Scroll-*linked* motion (the experience spine, the progress rail) is left on: it maps 1:1
+onto scroll position, so nothing happens that the reader did not directly cause.
+
 ## Design language (locked)
 
 Theme: **Dark Walnut + Bronze** — *warm craftsmanship × engineered precision, held together by restraint.*
 
-**Type stack**
+**Type stack — the native system font, no webfonts**
 
-- **Display:** Bricolage Grotesque — characterful contemporary grotesque, reserved for large moments.
-- **Body:** Satoshi — precise, premium product sans (deliberately not Inter).
-- **Mono:** JetBrains Mono — technical metadata, indices, tags.
-- Eyebrows/overlines: mono or Satoshi, uppercase, `tracking-widest`, in bronze — the signature detail.
+- **Display & body:** `system-ui` → San Francisco on Apple, Segoe UI on Windows, Roboto
+  on Android. One family for both.
+- **Mono:** `ui-monospace` → SF Mono / Consolas. Technical metadata, indices, tags.
+- Eyebrows/overlines: mono, uppercase, `tracking-widest`, in bronze — the signature detail.
 - Long-form text is constrained to the reading measure (`--container-prose`, ~65ch).
 
-> Font files are not self-hosted yet — the system fallbacks in `theme.css` render until
-> Bricolage Grotesque + Satoshi `.woff2` are added to `assets/` and declared.
+Nothing is downloaded, licensed, or requested from a CDN, so there is no flash of
+fallback text and no third-party request before first paint. With one family doing both
+display and body, hierarchy comes only from size, weight and space — which is what the
+brand principles ask for anyway.
+
+Two consequences worth knowing:
+
+- `Heading` defaults to **bold** at the display steps and semibold below. System UI faces
+  are optically lighter at large sizes than a purpose-built display face; semibold Segoe
+  UI at 7rem reads thin.
+- The type will not look pixel-identical across operating systems. That is the trade being
+  made, and it is the same one GitHub and Stripe make.
+
+`--font-display`, `--font-sans` and `--font-mono` are still separate tokens, so adding a
+real display face later is a one-line edit in `theme.css` plus a declaration in
+`design-system/styles/fonts.css`. No component names a font directly.
 
 **Foundational rules**
 

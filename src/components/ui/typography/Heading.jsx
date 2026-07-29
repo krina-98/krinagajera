@@ -65,19 +65,24 @@ const base = cn(
  * @param {object} props
  * @param {1|2|3|4|5|6} [props.level=2] - Semantic heading level → renders `h1`…`h6`.
  * @param {keyof typeof sizeStyles} [props.size] - Visual scale. Defaults to the size mapped to `level`.
- * @param {'medium'|'semibold'|'bold'} [props.weight='semibold'] - Display-font weight.
+ * @param {'medium'|'semibold'|'bold'} [props.weight] - Defaults to `bold` at the
+ *   display steps and `semibold` below them. Reason: the site runs on the
+ *   native system stack, and system UI faces are optically lighter at large
+ *   sizes than a purpose-built display face — semibold Segoe UI at 7rem reads
+ *   thin where a display font would have held. Pass a value to override.
  * @param {React.ReactNode} [props.children] - Heading content.
  * @param {string} [props.className] - Extra classes, merged last (can override defaults).
  * @param {React.Ref<HTMLHeadingElement>} ref
  */
 export const Heading = forwardRef(function Heading(
-  { level = 2, size, weight = 'semibold', className, children, ...props },
+  { level = 2, size, weight, className, children, ...props },
   ref,
 ) {
   const isValidLevel = Number.isInteger(level) && level >= 1 && level <= 6
   const resolvedLevel = isValidLevel ? level : 2
   // An omitted size is the norm; an unknown one is a typo — both fall back here.
   const resolvedSize = size && sizeStyles[size] ? size : levelSizes[resolvedLevel]
+  const resolvedWeight = weight ?? (resolvedSize.startsWith('display') ? 'bold' : 'semibold')
 
   if (import.meta.env?.DEV) {
     if (!isValidLevel) {
@@ -94,7 +99,7 @@ export const Heading = forwardRef(function Heading(
     <Tag
       ref={ref}
       data-slot="heading"
-      className={cn(base, sizeStyles[resolvedSize], weightStyles[weight], className)}
+      className={cn(base, sizeStyles[resolvedSize], weightStyles[resolvedWeight], className)}
       {...props}
     >
       {children}

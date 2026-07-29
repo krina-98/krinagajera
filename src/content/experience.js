@@ -17,7 +17,10 @@ export const experience = [
     period: '2021 — 2025',
     role: 'BE, Computer Engineering',
     company: 'Shree Swami Atmanand Saraswati Institute of Technology',
-    context: 'CGPA 8.49. Started building interfaces before the degree finished.',
+    // No grade. A CGPA is a number that can only count against you: strong
+    // enough and nobody hires on it, weak enough and it filters you out before
+    // anyone reads the work. It stays on the résumé, where it is asked for.
+    context: 'Started building interfaces before the degree finished.',
     notes: [
       'Code Unnati Program, 2023–2024 — CSR initiative by SAP and Edunet Foundation',
       'Industry-oriented software development, problem solving and employability',

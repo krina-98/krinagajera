@@ -1,15 +1,23 @@
 /**
- * Section ids double as scroll targets, nav hrefs and the observer list that
- * drives active-link highlighting — one array, so they cannot drift apart.
+ * The nav links, in order.
  *
- * The hero is deliberately absent: it is the top of the page, reachable by the
- * wordmark, and listing it would put a link in the nav that scrolls to where
- * the reader already is.
+ * Home is listed explicitly. The wordmark also goes home, but a wordmark is a
+ * convention rather than a signpost — plenty of people never learn it is
+ * clickable, and on a multi-page site being unable to find the way back is a
+ * dead end rather than a scroll.
+ *
+ * `end` marks a path that should only match exactly. Without it `/` counts as
+ * active on every route, because React Router treats a `to` as a prefix — Home
+ * would sit permanently highlighted alongside whichever page you were on.
+ *
+ * No `title` field: `App.jsx` declares the document title next to each route,
+ * where the route and its component are already paired.
  */
-export const sections = [
-  { id: 'about', label: 'About' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'contact', label: 'Contact' },
+export const routes = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/about', label: 'About' },
+  { to: '/skills', label: 'Skills' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/resume', label: 'Resume' },
+  { to: '/contact', label: 'Contact' },
 ]

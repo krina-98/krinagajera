@@ -1,59 +1,53 @@
-import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import { fade, fadeIn, fadeUp, viewport } from '@/design-system/motion'
 
-/** Reveal once the block is comfortably on screen, not the moment it grazes it. */
-const MARGIN = '0px 0px -12% 0px'
+const variantsByDirection = {
+  up: fadeUp,
+  in: fadeIn,
+}
 
 /**
- * Reveal — a one-shot entrance for a block of content as it scrolls in.
+ * Reveal — the default entrance for a single block of content.
  *
- * Deliberately not GSAP: the pinned hero owns ScrollTrigger, and adding dozens
- * of extra triggers for what is a single fade would make every
- * `ScrollTrigger.refresh()` measurably more expensive for no visual gain. An
- * IntersectionObserver and two CSS classes cost nothing and cannot desync from
- * the pin.
- *
- * The transition itself lives in `base.css` under `[data-reveal]`, so the
- * reduced-motion override there applies without this component knowing about
- * it. The observer disconnects after firing — nothing re-hides on scroll up.
+ * The workhorse: one block, one trigger, fires once. For a list whose items
+ * should arrive in sequence, use `Stagger` instead — thirty `Reveal`s with
+ * hand-tuned delays is thirty observers doing a parent's job.
  *
  * @param {object} props
  * @param {React.ElementType} [props.as='div'] - Element to render.
- * @param {number} [props.delay=0] - Stagger, in ms. Keep small; this is a fade.
+ * @param {'up'|'in'|'none'} [props.direction='up'] - `up` rises, `in` slides
+ *   from the side, `none` fades in place for content that must not shift.
+ * @param {number} [props.distance=20] - Travel in px. Ignored by `none`.
+ * @param {number} [props.delay=0] - Seconds, not milliseconds — this layer
+ *   speaks Framer's units so nothing has to convert at the call site.
  * @param {string} [props.className]
  */
-export function Reveal({ as: Tag = 'div', delay = 0, className, children, ...props }) {
-  const ref = useRef(null)
+export function Reveal({
+  as = 'div',
+  direction = 'up',
+  distance = 20,
+  delay = 0,
+  className,
+  children,
+  ...props
+}) {
+  const Tag = motion[as] ?? motion.div
 
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
+  const base = direction === 'none' ? fade : (variantsByDirection[direction] ?? fadeUp)(distance)
 
-    // Without the API the content must still be visible; failing closed here
-    // would hide the entire page.
-    if (typeof IntersectionObserver === 'undefined') {
-      el.dataset.revealed = ''
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return
-        entry.target.dataset.revealed = ''
-        observer.disconnect()
-      },
-      { rootMargin: MARGIN },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+  // Delay is folded into the variant rather than passed as a `transition` prop
+  // so it cannot silently replace the easing the variant already carries.
+  const variants = delay
+    ? { ...base, visible: { ...base.visible, transition: { ...base.visible.transition, delay } } }
+    : base
 
   return (
     <Tag
-      ref={ref}
-      data-reveal=""
-      style={delay ? { '--reveal-delay': `${delay}ms` } : undefined}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+      variants={variants}
       className={cn(className)}
       {...props}
     >

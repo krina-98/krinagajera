@@ -7,39 +7,129 @@ export const profile = {
   role: 'Frontend Developer',
   location: 'Surat, Gujarat',
   email: 'krinagajera988@gmail.com',
-  phone: '+91 93132 63533',
+  /**
+   * No phone number lives in this file. The site is public and a personal
+   * number on a public page is scraped within days; email and LinkedIn are the
+   * two routes in, and both are reversible if they ever start attracting spam.
+   * Share the number directly once a conversation is underway.
+   */
+  /**
+   * No geographic restriction here, deliberately. Naming the cities you will
+   * work in reads as a limit on the candidate rather than a preference, and it
+   * gives a recruiter a reason to stop reading before they have seen the work.
+   * If location matters for a particular role, it is a conversation, not a
+   * filter to publish.
+   */
   availability: {
     status: 'Open to frontend roles',
-    detail: 'React, Next.js and TypeScript teams — remote or Surat / Ahmedabad.',
+    detail: 'React, Next.js and TypeScript teams.',
   },
   /**
-   * Path to the résumé, served from `public/`. Null until the file exists —
-   * every surface that offers it checks first, so an unset résumé renders no
-   * link rather than a 404. Set this to e.g. '/krina-gajera-resume.pdf'.
+   * Path to the résumé, served from `public/`. Set to null to remove it from
+   * the site entirely — every surface that offers it checks first, so an unset
+   * résumé renders no link rather than a 404.
+   *
+   * The filename is deliberately generic so swapping the file requires no code
+   * change: drop a new PDF at `public/resume.pdf` and it is live.
    */
-  resume: null,
+  resume: '/resume.pdf',
+  /**
+   * `icon` names an entry in `components/ui/icons.jsx` — the content layer
+   * picks an icon without importing a component. `handle` is still here even
+   * though the links now render as icons: it becomes the accessible name, so a
+   * screen reader announces "GitHub, github.com/krina-98" rather than leaving
+   * someone to guess where an unlabelled glyph goes.
+   */
   links: [
-    { label: 'GitHub', href: 'https://github.com/krina-98', handle: 'github.com/krina-98' },
+    {
+      label: 'GitHub',
+      icon: 'github',
+      href: 'https://github.com/krina-98',
+      handle: 'github.com/krina-98',
+    },
     {
       label: 'LinkedIn',
+      icon: 'linkedin',
       href: 'https://linkedin.com/in/krinagajera27',
       handle: 'in/krinagajera27',
     },
-    { label: 'Email', href: 'mailto:krinagajera988@gmail.com', handle: 'krinagajera988@gmail.com' },
+    {
+      label: 'Email',
+      icon: 'email',
+      href: 'mailto:krinagajera988@gmail.com',
+      handle: 'krinagajera988@gmail.com',
+    },
   ],
 }
 
+/**
+ * Hero copy — a greeting, the rotating roles, and one call to action.
+ *
+ * Deliberately short. The hero used to carry an availability line, a role and
+ * location, and a paragraph of description; all of it is still on the page, in
+ * About and Contact, where a reader looking for it will actually be looking.
+ */
+export const hero = {
+  greeting: 'Hi there, I am',
+  /**
+   * Cycled by the typing animation under the greeting.
+   *
+   * Worth a flag: everything else on this page — the projects, the skills, the
+   * experience entry — is frontend. Nothing here evidences the M, E or N of
+   * MERN (Mongo, Express, Node), so an interviewer who reads the title and then
+   * the work will notice the gap. Either add a backend project to
+   * `projects.js`, or narrow this to what the page already proves.
+   */
+  roles: ['MERN Stack Developer', 'Web Developer'],
+  /**
+   * One call to action, not two. A single destination is a decision already
+   * made for the reader; a pair asks them to choose before they know anything.
+   * It points at Contact — the page's only real conversion.
+   */
+  action: { label: 'Hire me', to: '/contact' },
+}
+
+/**
+ * About — deliberately short, and deliberately about the work rather than the
+ * record.
+ *
+ * There is no `facts` ledger any more. It listed the employer, the degree with
+ * its CGPA, and a certification — a CV block transplanted onto a portfolio,
+ * which is both the heaviest thing on the page and the least persuasive. A
+ * grade says nothing a recruiter cannot get from the résumé, and naming a
+ * current employer beside "open to roles" is a risk with no upside.
+ *
+ * What is left is the argument: the kind of problem, and how it is approached.
+ * The employment history still lives in `experience.js`, where someone looking
+ * for it will look.
+ */
 export const about = {
-  lede: 'Most of what I have built moves while you are looking at it.',
-  body: [
-    'I am a frontend developer at Matlab Infotech in Surat, where I have spent the last year and a half on four products that share a problem: the data will not sit still. Live cricket commentary arriving over a socket. AI responses streaming token by token. Document extraction that finishes whenever it finishes and has to be polled until it does.',
-    'That has pushed me somewhere specific. I think about state ownership before I think about components, because in a live interface the question is never "how do I render this" — it is "who is allowed to change this, and what happens to everything else when they do". Zustand for match state, Redux for nested extraction data, Context for sessions: three different answers because they were three different problems.',
-    'The rest of my time goes on the parts that are easy to skip. Keyboard paths and ARIA on admin dashboards nobody demos. Jest and React Testing Library on components whose whole job is to re-render correctly. A Lighthouse score I took from 62 to 91 because 62 was embarrassing.',
-  ],
-  facts: [
-    { label: 'Current', value: 'Frontend Developer, Matlab Infotech — since Jan 2025' },
-    { label: 'Focus', value: 'Real-time interfaces, state architecture, accessibility, performance' },
-    { label: 'Education', value: 'BE Computer Engineering, 2021–2025 — CGPA 8.49' },
-    { label: 'Certification', value: 'Code Unnati Program, SAP & Edunet Foundation, 2023–2024' },
-  ],
+  greeting: ['Hi everyone,', 'I am Krina Gajera.'],
+  /**
+   * The whole introduction, in one line. There were two paragraphs here about
+   * state ownership and live interfaces — good writing, wrong page. Anyone who
+   * wants that argument gets it on Projects, next to the thing it built. About
+   * is where a reader finds out there is a person behind the work, and that
+   * does not take three hundred words.
+   */
+  lede: 'A frontend developer from Surat, India — currently building interfaces for a living.',
+
+  /**
+   * There is no interests list. Two versions were tried — a generic one
+   * (games, travelling, doing nothing) and a work-adjacent one — and neither
+   * earned its place. A hobby list is only worth printing when the hobbies are
+   * genuinely yours and genuinely specific; anything short of that is filler
+   * that a reader has to scroll past to reach the work.
+   *
+   * If real ones are ever added back: `interests: [{ emoji, label }]`, and the
+   * grid in `About.jsx` handled 2 to 6 of them.
+   */
+
+  /**
+   * Original, and specific to what she actually builds — an earlier draft of
+   * this was lifted verbatim from the reference site, which is a bad look on a
+   * page whose whole job is showing your own work.
+   */
+  quote:
+    'The best part is still hitting refresh and finding something there that was not an hour ago.',
 }

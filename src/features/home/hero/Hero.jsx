@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { Container, Section } from '@/components/ui'
 import { cn } from '@/lib/cn'
-import { Workstation } from './workstation/Workstation'
 import { HeroIntro } from './HeroIntro'
 import { HeroMeta } from './HeroMeta'
 import { heroMotion } from './motion'
@@ -60,12 +59,6 @@ export function Hero() {
             <div className="lg:col-span-5">
               <HeroIntro variants={rise} />
             </div>
-
-            {/* Seven columns for the render: it is 16:9 and it is the thing
-                people came to look at. */}
-            <motion.div variants={rise} className="lg:col-span-7 lg:col-start-6">
-              <Workstation />
-            </motion.div>
           </div>
         </Container>
 

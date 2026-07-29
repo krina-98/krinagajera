@@ -9,8 +9,8 @@ import { usePrefersReducedMotion } from '@/hooks'
  * only upgrades the plain jump to an animated one.
  *
  * Why not `scroll-behavior: smooth` in CSS: it applies to *every* scroll on the
- * document, including the ones ScrollTrigger performs while settling a pin, and
- * the two fight visibly. Animating here scopes it to deliberate navigation.
+ * document, including programmatic ones that want to land instantly. Animating
+ * here scopes the easing to deliberate navigation.
  *
  * `scroll-padding-top` on `:root` supplies the offset under the fixed bar, so
  * no arithmetic is needed here.

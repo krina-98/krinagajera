@@ -6,12 +6,14 @@
 @layer base {
   :root {
     color-scheme: dark;
-    /* No `scroll-behavior: smooth` — it fights ScrollTrigger's scrub, which
-       needs to read the raw scroll position rather than an animated one.
-       Nav links animate their own scroll instead, where it can be cancelled. */
+    /* No `scroll-behavior: smooth` — it would apply to every scroll on the
+       document, including ones the page performs itself. Nav links animate
+       their own scroll instead, where it can be cancelled. */
     /* Anchors land clear of the fixed bar. Applies to hash navigation and to
-       scrollIntoView, so the nav needs no per-target offset of its own. */
-    scroll-padding-top: 6rem;
+       scrollIntoView, so the nav needs no per-target offset of its own.
+       Fluid because the bar itself is h-16 on mobile and h-20 from `sm` up — a
+       fixed 6rem left too much dead space above a heading on a phone. */
+    scroll-padding-top: clamp(5rem, 4.2rem + 2.5vw, 6.5rem);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -22,9 +24,8 @@
     height: 100%;
   }
 
-  /* The pinned hero is exactly one viewport wide; nothing may add a horizontal
-     scrollbar underneath it, which would also shift every ScrollTrigger
-     measurement. */
+  /* Nothing on the page is allowed to add a horizontal scrollbar; the wide
+     grids and negative-offset glows would otherwise do exactly that. */
   body {
     overflow-x: clip;
   }
@@ -49,6 +50,24 @@
     font-family: var(--font-display);
     letter-spacing: var(--tracking-tight);
     color: var(--color-text);
+  }
+
+  /* Anything that behaves like a control gets a pointer.
+
+     Browsers give `<button>` `cursor: default` — the arrow — which is a
+     hangover from native form widgets and reads as "not clickable" to anyone
+     used to the web. Anchors already get a pointer from the UA stylesheet, so
+     these are the elements that need it stated.
+
+     `:not(:disabled)` keeps this honest for controls that are genuinely
+     unavailable: `Button` sets `cursor-not-allowed` when disabled and
+     `cursor-progress` while loading, and both must still win. Utilities outrank
+     base in Tailwind's cascade layers regardless, but the rule should be
+     correct on its own terms rather than relying on layer order. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
   }
 
   /* Consistent, on-brand focus ring for keyboard users only. */
@@ -104,51 +123,44 @@
 }
 
 /* =============================================================================
-   SCROLL ENTRANCE  —  the transition behind <Reveal>.
-   Kept in CSS rather than JS so the reduced-motion rule below is the single
-   authority, and so a block is never left invisible if a script fails.
+   SURFACES  —  reusable treatments that are awkward as utilities.
+   Scroll entrance used to live here as a CSS transition; it is now Framer
+   Motion (`components/motion`), with reduced motion handled once by the
+   MotionConfig in AppProviders.
    ========================================================================== */
 
 @layer components {
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(1rem);
-    transition:
-      opacity var(--duration-slower) var(--ease-out-expo),
-      transform var(--duration-slower) var(--ease-out-expo);
-    transition-delay: var(--reveal-delay, 0ms);
-    /* Promote only while the transition is pending, so long pages are not
-       holding dozens of composited layers after everything has revealed. */
-    will-change: opacity, transform;
-  }
-
-  [data-reveal][data-revealed] {
-    opacity: 1;
-    transform: none;
-    will-change: auto;
-  }
-
-  /* No travel and no delay: the content is simply there. The global rule above
-     already collapses the duration, but the offset and stagger have to go too,
-     or a reduced-motion reader waits out a stagger they cannot see. */
-  @media (prefers-reduced-motion: reduce) {
-    [data-reveal] {
-      opacity: 1;
-      transform: none;
-      transition: none;
-      transition-delay: 0ms !important;
+  /* A warm wash that follows the cursor across a surface. Pair with
+     `usePointerGlow`, which writes --pointer-x / --pointer-y at compositor
+     speed. Gated on :hover so it never appears on touch, and on a fine pointer
+     so it never appears under a finger that happens to report hover. */
+  @media (hover: hover) and (pointer: fine) {
+    /* `isolation` is not optional. An absolutely positioned ::before paints
+       above its parent's in-flow content, so without a stacking context of its
+       own and a negative z-index the wash would sit on top of the text it is
+       supposed to sit behind. */
+    .pointer-glow {
+      position: relative;
+      isolation: isolate;
     }
-  }
-}
 
-/* The scroll hint: a highlight travelling down a hairline. Declared outside a
-   layer so the utility that references it is never pruned. */
-@keyframes scroll-cue {
-  0% {
-    transform: translateY(-100%);
-  }
-  60%,
-  100% {
-    transform: translateY(200%);
+    .pointer-glow::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--duration-slow) var(--ease-standard);
+      background: radial-gradient(
+        22rem 22rem at var(--pointer-x, 50%) var(--pointer-y, 50%),
+        var(--color-glow),
+        transparent 70%
+      );
+    }
+
+    .pointer-glow:hover::before {
+      opacity: 1;
+    }
   }
 }

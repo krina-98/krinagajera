@@ -11,14 +11,22 @@ import { Container } from './Container'
  * rescales the entire ladder proportionally. Every step stays fluid (the tokens
  * are `clamp()`), so sections breathe with the viewport without breakpoints.
  *
+ * The multipliers are deliberately close together. Padding applies to both
+ * edges, so the perceived gap between two sections is the sum of one section's
+ * bottom and the next one's top — a 2x step reads as a 4x gap, which is how the
+ * page ended up feeling emptier than it is long.
+ *
  * Rendered range, min → max viewport:
- *   sm  2.5 → 5rem      md  4 → 9rem      lg  6 → 13.5rem      xl  8 → 18rem
+ *   sm  1.75 → 2.5rem   md  2.5 → 3.75rem   lg  3 → 4.5rem   xl  3.5 → 5.25rem
+ *
+ * Doubled, those are the gaps a reader actually sees: `lg` between two sections
+ * is ~144px at desktop.
  */
 const spacingStyles = {
   sm: 'py-[var(--spacing-section-sm)]',
   md: 'py-[var(--spacing-section)]',
-  lg: 'py-[calc(var(--spacing-section)*1.5)]',
-  xl: 'py-[calc(var(--spacing-section)*2)]',
+  lg: 'py-[calc(var(--spacing-section)*1.2)]',
+  xl: 'py-[calc(var(--spacing-section)*1.4)]',
 }
 
 /**

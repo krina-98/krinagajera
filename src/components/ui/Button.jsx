@@ -2,92 +2,7 @@ import { forwardRef } from 'react'
 import { cn } from '@/lib/cn'
 // Import siblings directly, never through the package barrel (avoids cycles).
 import { Spinner } from './Spinner'
-
-/** Shared across every variant: layout, shape, transitions, focus ring. */
-const base = cn(
-  'relative inline-flex select-none items-center justify-center',
-  'font-sans font-semibold whitespace-nowrap',
-  'rounded-md border border-transparent',
-  // Only interactive properties transition — no layout thrash.
-  'transition-[background-color,border-color,color,box-shadow,text-decoration-color,transform]',
-  'ease-standard duration-[var(--duration-fast)]',
-  // Replace the global outline with a ring that follows the border radius.
-  'outline-none focus-visible:outline-none',
-  'focus-visible:ring-2 focus-visible:ring-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
-)
-
-/** Press feedback: a 1px nudge, only when motion is allowed and the button is
- * interactive. Single source of truth so every pressable variant stays in sync. */
-const pressable = 'motion-safe:enabled:active:translate-y-px'
-
-/**
- * Color treatments. `enabled:` scopes hover/active so disabled AND loading
- * buttons (both carry the native `disabled` attribute) stay inert.
- */
-const variantStyles = {
-  primary: cn(
-    'bg-accent text-bg',
-    'enabled:hover:bg-accent-hover enabled:hover:shadow-accent',
-    pressable,
-  ),
-  secondary: cn(
-    'border-border bg-card text-text',
-    'enabled:hover:border-border-hover enabled:hover:bg-card-hover',
-    pressable,
-  ),
-  ghost: cn(
-    'bg-transparent text-text-secondary',
-    'enabled:hover:bg-card enabled:hover:text-text',
-    pressable,
-  ),
-  text: cn(
-    'rounded-sm bg-transparent text-accent-hover',
-    // Underline is revealed via decoration-color, so it fades instead of jumping.
-    'underline decoration-transparent decoration-1 underline-offset-4',
-    'enabled:hover:decoration-accent-hover',
-  ),
-  // Icon-only: behaves like ghost, but square (dimensions from iconSizeStyles).
-  icon: cn(
-    'bg-transparent text-text-secondary',
-    'enabled:hover:bg-card enabled:hover:text-text',
-    pressable,
-  ),
-}
-
-/** Contained variants (primary/secondary/ghost): height + horizontal padding + label size. */
-const sizeStyles = {
-  sm: 'h-9 px-3 text-sm',
-  md: 'h-11 px-5 text-sm', // 44px — meets the WCAG touch-target minimum
-  lg: 'h-13 px-7 text-base',
-}
-
-/** Icon variant: square, no horizontal padding. */
-const iconSizeStyles = {
-  sm: 'h-9 w-9 text-sm',
-  md: 'h-11 w-11 text-base',
-  lg: 'h-13 w-13 text-base',
-}
-
-/** Text variant: no box, size only affects the label. */
-const textSizeStyles = {
-  sm: 'text-sm',
-  md: 'text-sm',
-  lg: 'text-base',
-}
-
-/** Inner row: gap between label and icons, plus glyph sizing that tracks the size. */
-const contentStyles = {
-  sm: 'gap-1.5 [&_svg]:size-4',
-  md: 'gap-2 [&_svg]:size-4',
-  lg: 'gap-2.5 [&_svg]:size-5',
-}
-
-/** Glyph sizing for the icon-only variant. */
-const iconGlyphStyles = {
-  sm: '[&_svg]:size-4',
-  md: '[&_svg]:size-5',
-  lg: '[&_svg]:size-5',
-}
+import { buttonVariants, controlBase, controlContent, iconGlyph, resolveSizeClass } from './controlStyles'
 
 /**
  * Button — the foundational action element of the design system.
@@ -96,8 +11,13 @@ const iconGlyphStyles = {
  * (`onClick`, `aria-*`, `form`, `name`, ...). Flat and monochrome by default;
  * only `primary` wears accent.
  *
+ * For anything that navigates, reach for `ActionLink` instead — it shares this
+ * component's exact appearance (see `controlStyles.js`) while staying a real
+ * anchor. A button with an onClick that changes the URL loses middle-click,
+ * copy-link, and the announcement telling a screen-reader user where it goes.
+ *
  * @param {object} props
- * @param {'primary'|'secondary'|'ghost'|'text'|'icon'} [props.variant='primary'] - Visual style. `icon` is square and icon-only.
+ * @param {'primary'|'secondary'|'outline'|'ghost'|'text'|'icon'} [props.variant='primary'] - Visual style. `outline` is border-only; `icon` is square and icon-only.
  * @param {'sm'|'md'|'lg'} [props.size='md'] - Control size. `md` is 44px (touch-target safe).
  * @param {boolean} [props.isLoading=false] - Shows a spinner, preserves width, and marks the button busy + inert.
  * @param {boolean} [props.disabled=false] - Disables the button (also disabled while loading).
@@ -124,14 +44,11 @@ export const Button = forwardRef(function Button(
   ref,
 ) {
   const isIcon = variant === 'icon'
-  const isText = variant === 'text'
   const isDisabled = disabled || isLoading
 
   if (import.meta.env?.DEV && isIcon && !props['aria-label'] && !props['aria-labelledby']) {
     console.warn('[Button] variant="icon" needs an `aria-label` for screen readers.')
   }
-
-  const sizeClass = isIcon ? iconSizeStyles[size] : isText ? textSizeStyles[size] : sizeStyles[size]
 
   return (
     <button
@@ -141,9 +58,9 @@ export const Button = forwardRef(function Button(
       disabled={isDisabled}
       aria-busy={isLoading || undefined}
       className={cn(
-        base,
-        variantStyles[variant],
-        sizeClass,
+        controlBase,
+        buttonVariants[variant] ?? buttonVariants.primary,
+        resolveSizeClass(variant, size),
         // Loading stays full-strength (spinner shown); only true disabled dims.
         disabled && !isLoading && 'cursor-not-allowed opacity-60',
         isLoading && 'cursor-progress',
@@ -159,7 +76,7 @@ export const Button = forwardRef(function Button(
       <span
         className={cn(
           'inline-flex items-center justify-center',
-          isIcon ? iconGlyphStyles[size] : contentStyles[size],
+          isIcon ? iconGlyph[size] : controlContent[size],
           isLoading && 'opacity-0',
         )}
       >
