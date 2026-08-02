@@ -1,29 +1,71 @@
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { duration, easing } from '@/design-system/tokens'
-import { profile } from '@/content'
+import { seo } from '@/content/seo'
+
+function setMeta(name, content, attribute = 'name') {
+  if (!content) return
+
+  let element = document.head.querySelector(`meta[${attribute}="${name}"]`)
+
+  if (!element) {
+    element = document.createElement('meta')
+    element.setAttribute(attribute, name)
+    document.head.appendChild(element)
+  }
+
+  element.setAttribute('content', content)
+}
+
+function setLink(rel, href) {
+  if (!href) return
+
+  let element = document.head.querySelector(`link[rel="${rel}"]`)
+
+  if (!element) {
+    element = document.createElement('link')
+    element.setAttribute('rel', rel)
+    document.head.appendChild(element)
+  }
+
+  element.setAttribute('href', href)
+}
 
 /**
- * Page — the wrapper every route renders inside.
+ * Page - the wrapper every route renders inside.
  *
- * Owns the two things that stop being automatic the moment a site becomes
- * multi-page:
- *
- * 1. The document title. On one long page the title is set once in `index.html`
- *    and never changes. Across routes it has to track the route, or every tab,
- *    bookmark and history entry says the same thing.
- * 2. The entrance. Without it a route change is an instant repaint, which reads
- *    as a flicker rather than as navigation. Deliberately short and small —
- *    this fires on every single navigation, so anything more elaborate would
- *    wear out within a minute of browsing.
- *
- * The transform is dropped under reduced motion by the `MotionConfig` in
- * `AppProviders`; the fade survives, which is enough to signal the change.
+ * Owns the document metadata and entrance motion for route changes. The SEO
+ * work happens in the document head only, so page layout and visual styling do
+ * not change.
  */
 export function Page({ title, children }) {
+  const location = useLocation()
+
   useEffect(() => {
-    document.title = title ? `${title} — ${profile.name}` : `${profile.name} — ${profile.role}`
-  }, [title])
+    const pathname = location.pathname === '/' ? '/' : location.pathname.replace(/\/$/, '')
+    const routeSeo = seo.routes[pathname] ?? seo.routes['/']
+    const pageTitle = routeSeo.title || (title ? seo.titleTemplate.replace('%s', title) : seo.defaultTitle)
+    const description = routeSeo.description || seo.defaultDescription
+    const canonicalUrl = `${seo.siteUrl}${pathname === '/' ? '/' : pathname}`
+    const keywords = seo.keywords.join(', ')
+
+    document.title = pageTitle
+    setMeta('description', description)
+    setMeta('keywords', keywords)
+    setMeta('robots', 'index, follow')
+    setMeta('author', 'Krina Gajera')
+    setMeta('og:title', pageTitle, 'property')
+    setMeta('og:description', description, 'property')
+    setMeta('og:url', canonicalUrl, 'property')
+    setMeta('og:type', 'website', 'property')
+    setMeta('og:site_name', seo.siteName, 'property')
+    setMeta('og:locale', seo.locale, 'property')
+    setMeta('twitter:card', 'summary')
+    setMeta('twitter:title', pageTitle)
+    setMeta('twitter:description', description)
+    setLink('canonical', canonicalUrl)
+  }, [location.pathname, title])
 
   return (
     <motion.div
