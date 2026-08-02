@@ -1,23 +1,26 @@
 import { cn } from '@/lib/cn'
-import { Code, Heading, Section, Text } from '@/components/ui'
+import { ActionLink, Code, ExternalIcon, Heading, iconsByName, Section, Text } from '@/components/ui'
 import { Reveal, Stagger, StaggerItem } from '@/components/motion'
 import { projects } from '@/content'
 import { usePointerGlow } from '@/hooks'
 import { SectionHeader } from '../SectionHeader'
 
 /**
- * Projects — the four products, each as a problem and what she did about it.
+ * Projects — five products, each as a problem and what she did about it.
  *
- * No screenshots and no cards. The products are internal, and the interesting
- * part is the reasoning, so the layout gives the prose the room a card would
- * have spent on a border. (A card grid was considered and dropped for exactly
- * one reason: a card is mostly image, and there are no shareable screenshots of
- * software nobody outside the company can log into. Empty cards would look
- * worse than no cards.)
+ * No screenshots and no cards. Four of the five are internal, and the
+ * interesting part is the reasoning, so the layout gives the prose the room a
+ * card would have spent on a border. (A card grid was considered and dropped
+ * for exactly one reason: a card is mostly image, and there are no shareable
+ * screenshots of software nobody outside the company can log into. Empty cards
+ * would look worse than no cards.)
+ *
+ * The fifth, MemoryOS, is personal, and so it is the only entry that can carry
+ * a `links` array. That asymmetry is the argument for it being here at all.
  *
  * The identity rail sticks while its argument scrolls past. That is the point:
  * by the third paragraph of "Approach" the reader has usually forgotten which
- * of the four they are reading about, and a sticky index answers it without
+ * of the five they are reading about, and a sticky index answers it without
  * them having to scroll back.
  */
 export function Projects() {
@@ -91,6 +94,40 @@ function Project({ project }) {
                 </li>
               ))}
             </ul>
+
+            {/* Most projects render nothing here. The employer work is internal
+                — there is no URL to point at — so a link is the one thing that
+                marks out the project that is actually hers to show. It sits in
+                the sticky rail so it stays reachable while the case study
+                scrolls, rather than only at the bottom of a long read. */}
+            {project.links?.length > 0 && (
+              <ul className="mt-6 flex flex-wrap items-center gap-2">
+                {project.links.map((link, index) => {
+                  const Icon = link.icon ? iconsByName[link.icon] : ExternalIcon
+
+                  return (
+                    <li key={link.href}>
+                      <ActionLink
+                        href={link.href}
+                        target="_blank"
+                        variant={index === 0 ? 'outline' : 'ghost'}
+                        // `md`, not `sm`: these are the only tappable controls
+                        // in the projects page, and `sm` is 36px — under the
+                        // 44px minimum this design system sets for itself in
+                        // `controlStyles.js`.
+                        size="md"
+                        rightIcon={Icon ? <Icon className="size-3.5" /> : null}
+                      >
+                        {link.label}
+                        {/* Tabbing through links reads them out of context, and
+                            "Live demo" alone could belong to any project here. */}
+                        <span className="sr-only"> — {project.name}</span>
+                      </ActionLink>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </div>
         </div>
 
